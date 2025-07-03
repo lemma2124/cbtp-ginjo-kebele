@@ -10,25 +10,20 @@ export const QuickActionsCard = () => {
   
   const actions = [
     {
-      title: t('newRegistration'),
+      title: t("newRegistration"),
       icon: <UserPlus className="h-4 w-4" />,
-      href: '/residents/new'
+      href: "/residents/new",
     },
     {
-      title: t('approvals'),
+      title: t("approvals"),
       icon: <ClipboardCheck className="h-4 w-4" />,
-      href: '/documents/approvals'
+      href: "/ManageRequests",
     },
     {
-      title: t('generateCertificate'),
+      title: t("generateCertificate"),
       icon: <FileText className="h-4 w-4" />,
-      href: '/documents/generate'
+      href: "/documents/generate",
     },
-    {
-      title: t('map'),
-      icon: <Map className="h-4 w-4" />,
-      href: '/map'
-    }
   ];
   
   return (

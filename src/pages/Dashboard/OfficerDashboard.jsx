@@ -3,8 +3,11 @@ import React from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { StatCard } from '@/components/dashboard/StatCard';
-import { RecentActivityCard } from '@/components/dashboard/RecentActivityCard';
-import { QuickActionsCard } from '@/components/dashboard/QuickActionsCard';
+// import { RecentActivityCard } from '@/components/dashboard/RecentActivityCard';
+// import { QuickActionsCard } from '@/components/dashboard/QuickActionsCard';
+
+import RecentActivityCard from "@/components/dashboard/RecentActivityCard"; // Updated to use alias
+import { QuickActionsCard } from "@/components/dashboard/QuickActionsCard";
 import { Users, FileText, AlertCircle } from 'lucide-react';
 
 // This would be fetched from your backend in a real app

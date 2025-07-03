@@ -6,7 +6,9 @@ const AuthContext = createContext();
 const ROLES = {
   ADMIN: 'admin',
   OFFICER: 'officer',
-  RESIDENT: 'resident'
+  RESIDENT: 'resident',
+  STAFF: 'staff',
+  DATA_CLERK: 'data_clerk',
 };
 
 export const AuthProvider = ({ children }) => {

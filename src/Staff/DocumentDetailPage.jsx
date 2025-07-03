@@ -285,7 +285,7 @@ const DocumentsPage = () => {
       const url = window.URL.createObjectURL(pdfBlob);
       const link = document.createElement("a");
       link.href = url;
-    
+       console.log("dhan kun type ", certificateType)
       link.download = `${certificateType.replace(/\s+/g, "_")}_${
         resident.resident_id
       }.pdf`;

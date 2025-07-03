@@ -36,6 +36,10 @@ const ResidentDashboard = () => {
       reason: "Incomplete supporting documents"
     }
   ];
+  console.log("user in ResidentDashboard:", user);
+  console.log("documentRequests:", documentRequests);
+  // Function to render status badges
+  // This function renders the status badge based on the document status
 
   const renderStatusBadge = (status) => {
     switch (status) {
@@ -68,17 +72,19 @@ const ResidentDashboard = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">{t('dashboard')}</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t("dashboard")}</h2>
         <p className="text-muted-foreground">
-          {t('welcome')}, {user?.name}!
+          {t("welcome")}, {user?.name}!
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="col-span-1 md:col-span-2">
           <CardHeader>
-            <CardTitle>{t('documents')}</CardTitle>
-            <CardDescription>Manage your document requests and certificates</CardDescription>
+            <CardTitle>{t("documents")}</CardTitle>
+            <CardDescription>
+              Manage your document requests and certificates
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="active">
@@ -89,17 +95,24 @@ const ResidentDashboard = () => {
               </TabsList>
               <TabsContent value="active" className="space-y-4 mt-4">
                 {documentRequests
-                  .filter(doc => doc.status === 'pending')
-                  .map(doc => (
-                    <div key={doc.id} className="flex items-center justify-between border-b pb-4">
+                  .filter((doc) => doc.status === "pending")
+                  .map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="flex items-center justify-between border-b pb-4"
+                    >
                       <div className="flex items-center">
                         <div className="rounded-full p-2 bg-blue-100 mr-4">
                           <FileText className="h-5 w-5 text-blue-700" />
                         </div>
                         <div>
                           <p className="font-medium">{doc.type}</p>
-                          <p className="text-xs text-muted-foreground">Requested on {doc.date}</p>
-                          <p className="text-xs text-muted-foreground">Estimated completion: {doc.estimatedCompletion}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Requested on {doc.date}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Estimated completion: {doc.estimatedCompletion}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center">
@@ -107,7 +120,8 @@ const ResidentDashboard = () => {
                       </div>
                     </div>
                   ))}
-                {documentRequests.filter(doc => doc.status === 'pending').length === 0 && (
+                {documentRequests.filter((doc) => doc.status === "pending")
+                  .length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     No active requests
                   </div>
@@ -115,23 +129,33 @@ const ResidentDashboard = () => {
               </TabsContent>
               <TabsContent value="completed" className="space-y-4 mt-4">
                 {documentRequests
-                  .filter(doc => doc.status === 'approved')
-                  .map(doc => (
-                    <div key={doc.id} className="flex items-center justify-between border-b pb-4">
+                  .filter((doc) => doc.status === "approved")
+                  .map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="flex items-center justify-between border-b pb-4"
+                    >
                       <div className="flex items-center">
                         <div className="rounded-full p-2 bg-green-100 mr-4">
                           <FileText className="h-5 w-5 text-green-700" />
                         </div>
                         <div>
                           <p className="font-medium">{doc.type}</p>
-                          <p className="text-xs text-muted-foreground">Issued on {doc.issuedDate}</p>
-                          <p className="text-xs text-muted-foreground">Expires on {doc.expiryDate}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Issued on {doc.issuedDate}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Expires on {doc.expiryDate}
+                          </p>
                         </div>
                       </div>
-                      <Button size="sm" variant="outline">Download</Button>
+                      <Button size="sm" variant="outline">
+                        Download
+                      </Button>
                     </div>
                   ))}
-                {documentRequests.filter(doc => doc.status === 'approved').length === 0 && (
+                {documentRequests.filter((doc) => doc.status === "approved")
+                  .length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     No completed requests
                   </div>
@@ -139,23 +163,33 @@ const ResidentDashboard = () => {
               </TabsContent>
               <TabsContent value="rejected" className="space-y-4 mt-4">
                 {documentRequests
-                  .filter(doc => doc.status === 'rejected')
-                  .map(doc => (
-                    <div key={doc.id} className="flex items-center justify-between border-b pb-4">
+                  .filter((doc) => doc.status === "rejected")
+                  .map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="flex items-center justify-between border-b pb-4"
+                    >
                       <div className="flex items-center">
                         <div className="rounded-full p-2 bg-red-100 mr-4">
                           <FileText className="h-5 w-5 text-red-700" />
                         </div>
                         <div>
                           <p className="font-medium">{doc.type}</p>
-                          <p className="text-xs text-muted-foreground">Requested on {doc.date}</p>
-                          <p className="text-xs text-ethiopia-red">Reason: {doc.reason}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Requested on {doc.date}
+                          </p>
+                          <p className="text-xs text-ethiopia-red">
+                            Reason: {doc.reason}
+                          </p>
                         </div>
                       </div>
-                      <Button size="sm" variant="outline">Reapply</Button>
+                      <Button size="sm" variant="outline">
+                        Reapply
+                      </Button>
                     </div>
                   ))}
-                {documentRequests.filter(doc => doc.status === 'rejected').length === 0 && (
+                {documentRequests.filter((doc) => doc.status === "rejected")
+                  .length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     No rejected requests
                   </div>
@@ -163,11 +197,11 @@ const ResidentDashboard = () => {
               </TabsContent>
             </Tabs>
           </CardContent>
-          <CardFooter>
+          {/* <CardFooter>
             <Button className="w-full">Request New Document</Button>
-          </CardFooter>
+          </CardFooter> */}
         </Card>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>Resident Profile</CardTitle>
@@ -177,16 +211,21 @@ const ResidentDashboard = () => {
             <div className="space-y-4">
               <div className="flex justify-center">
                 <div className="h-24 w-24 rounded-full bg-muted flex items-center justify-center">
-                  <span className="text-3xl font-bold">{user?.name}
-                    //check it this value
-                    {console.log("this value is unknown"+user.name)}
+                  <span className="text-3xl font-bold">
+                    {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
                   </span>
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between border-b pb-2">
-                  <span className="text-sm text-muted-foreground">ID Number</span>
-                  <span className="text-sm font-medium">ETH-125687</span>
+                  <span className="text-sm text-muted-foreground">
+                    ID Number
+                  </span>
+                  <span className="text-sm font-medium">
+                   
+                    {user.national_id}
+                    
+                  </span>
                 </div>
                 <div className="flex justify-between border-b pb-2">
                   <span className="text-sm text-muted-foreground">Address</span>
@@ -197,18 +236,22 @@ const ResidentDashboard = () => {
                   <span className="text-sm font-medium">+251 912 345 678</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Registration Date</span>
+                  <span className="text-sm text-muted-foreground">
+                    Registration Date
+                  </span>
                   <span className="text-sm font-medium">15 Jan 2023</span>
                 </div>
               </div>
             </div>
           </CardContent>
-          <CardFooter>
-            <Button variant="outline" className="w-full">Update Profile</Button>
-          </CardFooter>
+          {/* <CardFooter>
+            <Button variant="outline" className="w-full">
+              Update Profile
+            </Button>
+          </CardFooter> */}
         </Card>
       </div>
-      
+{/* 
       <Card>
         <CardHeader>
           <CardTitle>Announcements</CardTitle>
@@ -217,17 +260,27 @@ const ResidentDashboard = () => {
           <div className="space-y-4">
             <div className="bg-ethiopia-yellow/10 border border-ethiopia-yellow/20 rounded-md p-4">
               <h4 className="font-semibold text-sm">ID Card Renewal Notice</h4>
-              <p className="text-sm mt-1">All residents with ID cards issued before 2020 should visit the Kebele office for renewal.</p>
-              <p className="text-xs text-muted-foreground mt-2">Posted: 3 days ago</p>
+              <p className="text-sm mt-1">
+                All residents with ID cards issued before 2020 should visit the
+                Kebele office for renewal.
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Posted: 3 days ago
+              </p>
             </div>
             <div className="bg-muted rounded-md p-4">
               <h4 className="font-semibold text-sm">New Census Registration</h4>
-              <p className="text-sm mt-1">National census registration will begin next month. Please ensure your household information is up to date.</p>
-              <p className="text-xs text-muted-foreground mt-2">Posted: 1 week ago</p>
+              <p className="text-sm mt-1">
+                National census registration will begin next month. Please
+                ensure your household information is up to date.
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Posted: 1 week ago
+              </p>
             </div>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 };

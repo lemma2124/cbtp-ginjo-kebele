@@ -37,14 +37,12 @@ const ResidentCard = ({ resident, onClick }) => {
   return (
     <Card className="hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer border rounded-lg overflow-hidden group">
       <div className="bg-gradient-to-b from-primary/10 to-transparent h-24 flex items-center justify-center">
-      
         {console.log(
           `http://localhost/krfs-api/uploads/photos/ ==` + resident.photo_path
         )}{" "}
         {console.log(
           `http://localhost/krfs-api/uploads/http://localhost/krfs-api/uploads/photos/photo_683658eb4ea586.33538599.jpg/ ==`
         )}
-        
         {resident.photo_path ? (
           <img
             src={`http://localhost/krfs-api/${resident.photo_path}`}
@@ -180,7 +178,6 @@ const ResidentTable = ({ residents, sortConfig, onSort }) => {
                 <td className="px-4 py-3">{resident.kebele_name}</td>
                 <td className="px-4 py-3">{resident.occupation}</td>
                 <td className="px-4 py-3">{resident.education_level}</td>
-               
 
                 <td className="px-4 py-3">
                   <Badge
@@ -246,12 +243,10 @@ const ResidentsPage = () => {
   const [isTableView, setIsTableView] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
-  
-
   useEffect(() => {
     const fetchResidents = async () => {
       try {
-        const response = await apiClient.get("/residents/read.php");
+        const response = await apiClient.get("/residents/readAdmin.php");
         const transformed = response.data.map((res) => ({
           ...res,
           is_active: Boolean(res.is_active),
@@ -331,9 +326,9 @@ const ResidentsPage = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="md:w-72"
           />
-          {/* <Button onClick={() => navigate("/residents/new")}>
+          <Button onClick={() => navigate("/residents/new")}>
             + {t("add_resident")}
-          </Button> */}
+          </Button>
           <Button
             variant="outline"
             onClick={() => setIsTableView(!isTableView)}
@@ -348,7 +343,7 @@ const ResidentsPage = () => {
         {[
           "gender",
           "maritalStatus",
-      
+          "isActive",
           "kebele",
           "education",
           "occupation",

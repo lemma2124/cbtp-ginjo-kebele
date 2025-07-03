@@ -80,6 +80,7 @@ const SettingsPage = () => {
                   <div className="space-y-2">
                     <Label htmlFor="displayName">Display Name</Label>
                     <Input
+                      disabled
                       id="displayName"
                       defaultValue={[
                         user?.first_name,
@@ -96,6 +97,17 @@ const SettingsPage = () => {
                     <Input
                       id="username"
                       defaultValue={user?.username}
+                     
+                      disabled
+                    
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="username">Role</Label>
+                    <Input
+                      id="username"
+                      defaultValue={user?.role}
+                      readonly
                       disabled
                     />
                   </div>
@@ -105,29 +117,43 @@ const SettingsPage = () => {
                     <Input
                       id="email"
                       type="email"
+                      disabled
                       defaultValue={user?.email_address}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number</Label>
-                    <Input id="phone" defaultValue={user?.phone_number} />
+                    <Input
+                      disabled
+                      id="phone"
+                      defaultValue={user?.phone_number}
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="nationalId">National ID</Label>
-                    <Input id="nationalId" defaultValue={user?.national_id} />
+                    <Input
+                      disabled
+                      id="nationalId"
+                      defaultValue={user?.national_id}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="gender">Gender</Label>
-                    <Input id="gender" defaultValue={user?.gender} />
+                    <Input disabled id="gender" defaultValue={user?.gender} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="dob">Date of Birth</Label>
-                    <Input id="dob" defaultValue={user?.date_of_birth} />
+                    <Input
+                      disabled
+                      id="dob"
+                      defaultValue={user?.date_of_birth}
+                    />
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label htmlFor="address">Address</Label>
                     <Input
+                      disabled
                       id="address"
                       defaultValue={[
                         user?.house_number,
@@ -142,13 +168,9 @@ const SettingsPage = () => {
                   </div>
                 </div>
               </div>
+              
 
-              <div className="flex justify-end">
-                <Button>
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Changes
-                </Button>
-              </div>
+              {console.log(user?.role)}
             </CardContent>
           </Card>
         </TabsContent>
@@ -243,7 +265,6 @@ const SettingsPage = () => {
               <CardTitle>Notification Preferences</CardTitle>
               <CardDescription>
                 Choose how you want to be notified
-               
                 {console.log(user.notifications)}
               </CardDescription>
             </CardHeader>

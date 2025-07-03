@@ -8,58 +8,103 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { use } from 'react';
 
 export const Sidebar = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
   const location = useLocation();
-  
+
   const navigation = [
     {
-      title: t('dashboard'),
-      href: '/',
+      title: t("dashboard"),
+      href: "/",
       icon: Home,
-      roles: [useAuth().ROLES.ADMIN, useAuth().ROLES.OFFICER, useAuth().ROLES.RESIDENT]
+      roles: [
+        useAuth().ROLES.ADMIN,
+        useAuth().ROLES.OFFICER,
+        useAuth().ROLES.RESIDENT,
+        useAuth().ROLES.STAFF,
+      ],
     },
     {
-      title: t('residents'),
-      href: '/residents',
+      title: t("residentsALL"),
+      href: "/residentsALL",
       icon: Users,
-      roles: [useAuth().ROLES.ADMIN, useAuth().ROLES.OFFICER]
+      roles: [useAuth().ROLES.ADMIN],
     },
     {
-      title: t('documents'),
-      href: '/documents',
+      title: t("Certificate"),
+      href: "/CertificateList",
+      icon: Users,
+      roles: [useAuth().ROLES.RESIDENT],
+    },
+    {
+      title: t("residents"),
+      href: "/residents",
+      icon: Users,
+      roles: [useAuth().ROLES.OFFICER, useAuth().ROLES.STAFF],
+    },
+    {
+      title: t("Register"),
+      href: "/RegisterResident",
+      icon: Users,
+      roles: [useAuth().ROLES.STAFF],
+    },
+    {
+      title: t("documents"),
+      href: "/documents/request",
       icon: FileText,
-      roles: [useAuth().ROLES.ADMIN, useAuth().ROLES.OFFICER, useAuth().ROLES.RESIDENT]
-    },
-    {
-      title: t('reports'),
-      href: '/reports',
-      icon: BarChart2,
-      roles: [useAuth().ROLES.ADMIN, useAuth().ROLES.OFFICER]
-    },
-    {
-      title: t('notifications'),
-      href: '/notifications',
-      icon: Bell,
-      roles: [useAuth().ROLES.ADMIN, useAuth().ROLES.OFFICER]
-    },
-    {
-      title: t('settings'),
-      href: '/settings',
-      icon: Settings,
-      roles: [useAuth().ROLES.ADMIN, useAuth().ROLES.OFFICER, useAuth().ROLES.RESIDENT]
-    }
-  ];
+      //RegisterResident
+      roles: [
+        useAuth().ROLES.ADMIN,
+        useAuth().ROLES.OFFICER,
 
-  const filteredNavigation = user 
-    ? navigation.filter(item => item.roles.includes(user.role))
+        useAuth().ROLES.STAFF,
+      ],
+    },
+    {
+      title: t("reports"),
+      href: "/reports",
+      icon: BarChart2,
+      roles: [useAuth().ROLES.ADMIN, useAuth().ROLES.OFFICER],
+    },
+    {
+      title: t("notifications"),
+      href: "/notifications",
+      icon: Bell,
+      roles: [
+        useAuth().ROLES.ADMIN
+      
+      ],
+    },
+
+    {
+      title: t("ManageRequests"),
+      href: "/ManageRequests",
+      icon: FileText,
+      roles: [useAuth().ROLES.STAFF],
+    },
+    {
+      title: t("settings"),
+      href: "/settings",
+      icon: Settings,
+      roles: [
+        useAuth().ROLES.ADMIN,
+        useAuth().ROLES.OFFICER,
+        useAuth().ROLES.RESIDENT,
+        useAuth().ROLES.STAFF,
+      ],
+    },
+  ];
+  //
+  const filteredNavigation = user
+    ? navigation.filter((item) => item.roles.includes(user.role))
     : navigation;
-    
+
   const isActiveRoute = (href) => {
-    if (href === '/') {
-      return location.pathname === '/';
+    if (href === "/") {
+      return location.pathname === "/";
     }
     return location.pathname.startsWith(href);
   };
@@ -69,9 +114,7 @@ export const Sidebar = () => {
       <div className="px-3 py-2">
         <div className="mb-10 flex items-center px-4">
           <div className="h-8 w-8 rounded-full ethiopia-flag-gradient" />
-          <h2 className="ml-2 text-lg font-semibold tracking-tight">
-            KRFMS
-          </h2>
+          <h2 className="ml-2 text-lg font-semibold tracking-tight">KRFMS</h2>
         </div>
         <div className="space-y-1">
           {filteredNavigation.map((item) => (

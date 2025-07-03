@@ -13,7 +13,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
 
-// Assume you get the admin user_id from context or props
 const ADMIN_USER_ID = 1;
 
 const eventTypes = [
@@ -82,27 +81,40 @@ const SendNotification = () => {
   };
 
   return (
-    <div className="container mx-auto max-w-xl p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Send Notification to Resident</CardTitle>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 py-10">
+      <Card className="w-full max-w-2xl shadow-xl border-0">
+        <CardHeader className="bg-blue-600 rounded-t-lg px-8 py-6">
+          <CardTitle className="text-white text-2xl font-bold flex items-center gap-2">
+            <span role="img" aria-label="notification">
+              📢
+            </span>
+            Send Notification to Resident
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <form className="space-y-6" onSubmit={handleSubmit}>
+        <CardContent className="p-8">
+          <form className="space-y-7" onSubmit={handleSubmit}>
             <div>
-              <Label>Resident</Label>
+              <Label className="font-semibold text-base mb-1 block">
+                Resident
+              </Label>
               <Select
                 onValueChange={(v) => handleSelect("resident_id", v)}
                 value={form.resident_id}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Resident" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-50 bg-white shadow-lg rounded-lg border mt-1 max-h-64 overflow-y-auto">
+                  {residents.length === 0 && (
+                    <div className="px-4 py-2 text-gray-400">
+                      No residents found
+                    </div>
+                  )}
                   {residents.map((r) => (
                     <SelectItem
                       key={r.resident_id}
                       value={String(r.resident_id)}
+                      className="hover:bg-blue-50 cursor-pointer"
                     >
                       {r.first_name} {r.last_name} ({r.national_id})
                     </SelectItem>
@@ -111,17 +123,23 @@ const SendNotification = () => {
               </Select>
             </div>
             <div>
-              <Label>Event Type</Label>
+              <Label className="font-semibold text-base mb-1 block">
+                Event Type
+              </Label>
               <Select
                 onValueChange={(v) => handleSelect("event_type", v)}
                 value={form.event_type}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full ">
                   <SelectValue placeholder="Select Type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-50 bg-white shadow-lg rounded-lg border mt-1 max-h-64 overflow-y-auto">
                   {eventTypes.map((et) => (
-                    <SelectItem key={et.value} value={et.value}>
+                    <SelectItem
+                      key={et.value}
+                      value={et.value}
+                      className="hover:bg-blue-50 cursor-pointer"
+                    >
                       {et.label}
                     </SelectItem>
                   ))}
@@ -129,25 +147,37 @@ const SendNotification = () => {
               </Select>
             </div>
             <div>
-              <Label>Title</Label>
+              <Label className="font-semibold text-base mb-1 block">
+                Title
+              </Label>
               <Input
                 name="title"
                 value={form.title}
                 onChange={handleChange}
                 required
+                placeholder="Enter notification title"
+                className="w-full"
               />
             </div>
             <div>
-              <Label>Message</Label>
+              <Label className="font-semibold text-base mb-1 block">
+                Message
+              </Label>
               <Textarea
                 name="message"
                 value={form.message}
                 onChange={handleChange}
                 required
                 rows={4}
+                placeholder="Type your message here..."
+                className="w-full"
               />
             </div>
-            <Button type="submit" disabled={loading} className="w-full">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-lg font-semibold py-3 rounded-lg transition"
+            >
               {loading ? "Sending..." : "Send Notification"}
             </Button>
           </form>

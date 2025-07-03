@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -14,8 +15,8 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import {
-  User,
   ArrowLeft,
   FileText,
   Edit,
@@ -24,12 +25,20 @@ import {
   Calendar,
   Users,
   Clock,
+  UserPlus,
+  FilePlus,
+  PlusCircle,
+  Trash2,
 } from "lucide-react";
+import apiClient from "../service/api";
+import { useToast } from "@/hooks/use-toast";
 
-const ResidentDetailPage = () => {
+const ResidentDetailPages = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { token } = useAuth();
+  const { toast } = useToast();
 
   // State
   const [resident, setResident] = useState(null);
@@ -38,82 +47,9 @@ const ResidentDetailPage = () => {
   const [serviceHistory, setServiceHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // Fetch resident data
-  useEffect(() => {
-    const fetchResidentDetails = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost/krfs-api/api/residents/getByIdResident.php?resident_id=${id}`
-        );
-        const result = await response.json();
-        if (result.success) {
-          // Resident
-          setResident({
-            ...result.resident,
-            name: `${result.resident.first_name} ${
-              result.resident.middle_name || ""
-            } ${result.resident.last_name}`,
-            idNumber: result.resident.national_id,
-            phone: result.resident.phone_number,
-            address: result.resident.house_number
-              ? `${result.resident.house_number}, ${
-                  result.resident.street_name || ""
-                }, ${result.resident.subcity || ""}, ${
-                  result.resident.city || ""
-                }`
-              : "",
-            dateOfBirth: result.resident.date_of_birth,
-            age: result.resident.date_of_birth
-              ? new Date().getFullYear() -
-                new Date(result.resident.date_of_birth).getFullYear()
-              : "",
-            maritalStatus: result.resident.marital_status,
-            registrationDate: result.resident.registration_date,
-            photo: result.resident.photo_path,
-          });
-
-          // Documents
-          setDocuments(result.documents || []);
-
-          // Service History
-          setServiceHistory(
-            (result.serviceHistory || []).map((s) => ({
-              ...s,
-              type: s.service_type || s.details || s.type,
-              created_at: s.request_date || s.created_at,
-              status: s.status,
-              description: s.details || s.description,
-              request_id: s.request_id,
-            }))
-          );
-
-          // Family Members
-          setFamilyMembers(
-            (result.familyMembers || []).map((member) => ({
-              name: `${member.first_name || ""} ${
-                member.last_name || ""
-              }`.trim(),
-              relationship: member.relationship_type || "",
-              membership_id: member.resident_id || "",
-            }))
-          );
-        } else {
-          throw new Error(result.error || "Failed to load resident");
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-
-
-    fetchResidentDetails();
-  }, [id]);
-
-    console.log("id"+id);
   // Form states
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [addDocumentOpen, setAddDocumentOpen] = useState(false);
@@ -136,7 +72,153 @@ const ResidentDetailPage = () => {
     description: "",
   });
 
-  // Dummy add functions (local only)
+  // Fetch resident data
+  useEffect(() => {
+    const fetchResidentDetails = async () => {
+      try {
+        const mockResident = {
+          resident_id: id,
+          first_name: "Abdi",
+          middle_name: "Kedir",
+          last_name: "Tolera",
+          national_id: "NID-1001",
+          phone_number: "0912345678",
+          house_number: "1234",
+          street_name: "Main Street",
+          subcity: "Djebel",
+          city: "Jimma",
+          date_of_birth: "1985-05-15",
+          marital_status: "Married",
+          registration_date: "2020-01-15",
+          photo_path: "",
+          gender: "Male",
+          family_name: "Tolera Family",
+          kebele_name: "Kebele 01",
+          woreda_name: "Jimma Town",
+          is_active: true,
+        };
+
+        setResident({
+          ...mockResident,
+          name: `${mockResident.first_name} ${mockResident.middle_name || ""} ${
+            mockResident.last_name
+          }`,
+          idNumber: mockResident.national_id,
+          phone: mockResident.phone_number,
+          address: mockResident.house_number
+            ? `${mockResident.house_number}, ${
+                mockResident.street_name || ""
+              }, ${mockResident.subcity || ""}, ${mockResident.city || ""}`
+            : "",
+          dateOfBirth: mockResident.date_of_birth,
+          age: mockResident.date_of_birth
+            ? new Date().getFullYear() -
+              new Date(mockResident.date_of_birth).getFullYear()
+            : "",
+          maritalStatus: mockResident.marital_status,
+          registrationDate: mockResident.registration_date,
+          photo: mockResident.photo_path,
+        });
+
+        setDocuments([
+          {
+            document_id: 1,
+            type: "National ID",
+            issue_date: "2010-05-20",
+            expiry_date: "2030-05-20",
+            status: "active",
+          },
+          {
+            document_id: 2,
+            type: "Driver's License",
+            issue_date: "2018-03-12",
+            expiry_date: "2028-03-12",
+            status: "active",
+          },
+        ]);
+
+        setServiceHistory([
+          {
+            request_id: 1,
+            type: "Water Connection",
+            created_at: "2023-01-10",
+            status: "completed",
+            description: "New water line installation",
+          },
+          {
+            request_id: 2,
+            type: "Electricity Meter",
+            created_at: "2023-03-15",
+            status: "in progress",
+            description: "Meter replacement",
+          },
+          {
+            request_id: 3,
+            type: "Garbage Collection",
+            created_at: "2023-04-22",
+            status: "pending",
+            description: "Regular schedule request",
+          },
+        ]);
+
+        setFamilyMembers([
+          {
+            name: "Alem Tolera",
+            relationship: "Spouse",
+            membership_id: "NID-1002",
+          },
+          {
+            name: "Bereket Abdi",
+            relationship: "Child",
+            membership_id: "NID-1003",
+          },
+          {
+            name: "Selam Abdi",
+            relationship: "Child",
+            membership_id: "NID-1004",
+          },
+        ]);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResidentDetails();
+  }, [id]);
+
+  // Delete resident
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await apiClient.delete(
+        `http://localhost/krfs-api/api/admin/delete.php?id=${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast({
+        title: t("success"),
+        description: t("resident_deleted_successfully"),
+        status: "success",
+      });
+      navigate("/residents");
+    } catch (err) {
+      toast({
+        title: t("error"),
+        description: t("failed_to_delete_resident"),
+        status: "error",
+      });
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteDialogOpen(false);
+    }
+  };
+
+  // Add functions
   const handleAddMember = () => {
     setFamilyMembers([...familyMembers, { ...newMember, id: Date.now() }]);
     setAddMemberOpen(false);
@@ -188,26 +270,62 @@ const ResidentDetailPage = () => {
       </div>
     );
 
+  // Format date for display
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   return (
     <div className="container mx-auto p-6 space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft />
+            <ArrowLeft className="h-4 w-4" />
           </Button>
           <h2 className="text-3xl font-bold tracking-tight">
             {t("resident_details")}
           </h2>
         </div>
         <div className="flex gap-2 w-full sm:w-auto justify-end">
-          {/* <Button variant="outline" onClick={() => window.print()}>
+          <Button variant="outline" onClick={() => window.print()}>
             <FileText className="mr-2 h-4 w-4" /> {t("print_profile")}
-          </Button> */}
-      
-          <Button onClick={() => navigate(`/residents/edit/:${id}`)}>
-            <Edit className="mr-2 h-4 w-4"  id={id}/> {t("edit_details")}
           </Button>
+          <Button onClick={() => navigate(`/residents/edit/${id}`)}>
+            <Edit className="mr-2 h-4 w-4" /> {t("edit_details")}
+          </Button>
+          <Dialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+          >
+            <DialogTrigger asChild>
+              <Button variant="destructive">
+                <Trash2 className="mr-2 h-4 w-4" /> {t("delete_resident")}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t("confirm_deletion")}</DialogTitle>
+              </DialogHeader>
+              <p>{t("are_you_sure_delete_resident")}</p>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDeleteDialogOpen(false)}
+                >
+                  {t("cancel")}
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? t("deleting") : t("delete")}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -216,24 +334,27 @@ const ResidentDetailPage = () => {
         {/* Left Side - Resident Summary */}
         <Card className="lg:col-span-1 shadow-md">
           <CardContent className="pt-6 pb-4 space-y-6">
-            {/* Photo */}
             <div className="flex justify-center">
-              <div className="h-32 w-32 rounded-full overflow-hidden bg-muted flex items-center justify-center">
-                <img
-                  src={resident.photo || "/placeholder.svg"}
-                  alt={resident.name}
-                  className="h-full w-full object-cover"
-                />
+              <div className="h-32 w-32 rounded-full overflow-hidden bg-muted flex items-center justify-center border-4 border-white shadow-lg">
+                <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-full flex items-center justify-center text-gray-400">
+                  <Users className="h-16 w-16" />
+                </div>
               </div>
             </div>
-            {/* Name & ID */}
             <div className="text-center">
               <h3 className="text-xl font-semibold">{resident.name}</h3>
-              <p className="text-sm text-muted-foreground">
-                {t("id_number")}: {resident.idNumber}
+              <div className="flex flex-wrap justify-center gap-2 mt-2">
+                <Badge variant={resident.is_active ? "success" : "destructive"}>
+                  {resident.is_active ? t("active") : t("inactive")}
+                </Badge>
+                <Badge variant="secondary">
+                  {t("family")}: {resident.family_name}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">
+                {t("national_id")}: {resident.idNumber}
               </p>
             </div>
-            {/* Info List */}
             <div className="space-y-3">
               <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
                 <Phone className="h-4 w-4 text-primary" />
@@ -241,23 +362,23 @@ const ResidentDetailPage = () => {
               </div>
               <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
                 <Home className="h-4 w-4 text-primary" />
-                <span>{resident.address || t("not_specified")}</span>
+                <span>{resident.address}</span>
               </div>
               <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
                 <Calendar className="h-4 w-4 text-primary" />
                 <span>
-                  {resident.dateOfBirth}, {resident.age} {t("years")}
+                  {formatDate(resident.dateOfBirth)}, {resident.age}{" "}
+                  {t("years")}
                 </span>
               </div>
               <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
                 <Users className="h-4 w-4 text-primary" />
-                <span>{resident.maritalStatus || t("not_specified")}</span>
+                <span>{resident.maritalStatus}</span>
               </div>
               <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
                 <Clock className="h-4 w-4 text-primary" />
                 <span>
-                  {t("registered_on")}:{" "}
-                  {new Date(resident.registrationDate).toLocaleDateString()}
+                  {t("registered_on")}: {formatDate(resident.registrationDate)}
                 </span>
               </div>
             </div>
@@ -268,8 +389,7 @@ const ResidentDetailPage = () => {
         <Card className="lg:col-span-3 shadow-md">
           <CardContent className="pt-6">
             <Tabs defaultValue="family">
-              {/* Tab Navigation */}
-              <TabsList className="mb-6 grid w-full max-w-md grid-cols-3">
+              <TabsList className="mb-6 grid w-full grid-cols-3">
                 <TabsTrigger value="family">{t("family_members")}</TabsTrigger>
                 <TabsTrigger value="documents">
                   {t("identity_documents")}
@@ -279,14 +399,13 @@ const ResidentDetailPage = () => {
                 </TabsTrigger>
               </TabsList>
 
-              {/* Family Members Tab */}
               <TabsContent value="family" className="space-y-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-medium">{t("family_members")}</h3>
                   <Dialog open={addMemberOpen} onOpenChange={setAddMemberOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <User className="mr-1 h-3 w-3" />
+                      <Button size="sm">
+                        <UserPlus className="mr-1 h-4 w-4" />
                         {t("add_member")}
                       </Button>
                     </DialogTrigger>
@@ -348,21 +467,25 @@ const ResidentDetailPage = () => {
                     </DialogContent>
                   </Dialog>
                 </div>
-                {/* Family Members List */}
                 <div className="space-y-3">
                   {familyMembers.length > 0 ? (
                     familyMembers.map((member, index) => (
                       <div
                         key={index}
-                        className="flex justify-between items-center p-3 border rounded-lg hover:bg-muted transition-colors"
+                        className="flex justify-between items-center p-4 border rounded-lg hover:bg-muted/30 transition-colors"
                       >
                         <div>
                           <p className="font-medium">{member.name}</p>
                           <p className="text-sm text-muted-foreground">
-                            {member.relationship}, {member.membership_id}
+                            {t("relationship")}: {member.relationship},{" "}
+                            {t("membership_id")}: {member.membership_id}
                           </p>
                         </div>
-                        <Button variant="ghost" size="sm">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => console.log("View member", member)}
+                        >
                           {t("view")}
                         </Button>
                       </div>
@@ -375,7 +498,6 @@ const ResidentDetailPage = () => {
                 </div>
               </TabsContent>
 
-              {/* Documents Tab */}
               <TabsContent value="documents" className="space-y-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-medium">
@@ -386,8 +508,8 @@ const ResidentDetailPage = () => {
                     onOpenChange={setAddDocumentOpen}
                   >
                     <DialogTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <FileText className="mr-1 h-3 w-3" />
+                      <Button size="sm">
+                        <FilePlus className="mr-1 h-4 w-4" />
                         {t("add_document")}
                       </Button>
                     </DialogTrigger>
@@ -445,19 +567,21 @@ const ResidentDetailPage = () => {
                     </DialogContent>
                   </Dialog>
                 </div>
-                {/* Document List */}
                 <div className="space-y-3">
                   {documents.length > 0 ? (
                     documents.map((doc) => (
                       <div
                         key={doc.document_id}
-                        className="flex justify-between items-center p-3 border rounded-lg hover:bg-muted transition-colors"
+                        className="flex justify-between items-center p-4 border rounded-lg hover:bg-muted/30 transition-colors"
                       >
                         <div>
                           <p className="font-medium">{doc.type}</p>
                           <p className="text-sm text-muted-foreground">
-                            {t("issued")}: {doc.issue_date}, {t("expires")}:{" "}
-                            {doc.expiry_date || t("never")}
+                            {t("issued")}: {formatDate(doc.issue_date)},{" "}
+                            {t("expires")}:{" "}
+                            {doc.expiry_date
+                              ? formatDate(doc.expiry_date)
+                              : t("never")}
                           </p>
                         </div>
                         <div className="flex gap-2">
@@ -478,7 +602,6 @@ const ResidentDetailPage = () => {
                 </div>
               </TabsContent>
 
-              {/* Service History Tab */}
               <TabsContent value="services" className="space-y-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-medium">
@@ -489,8 +612,8 @@ const ResidentDetailPage = () => {
                     onOpenChange={setAddServiceOpen}
                   >
                     <DialogTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <Clock className="mr-1 h-3 w-3" />
+                      <Button size="sm">
+                        <PlusCircle className="mr-1 h-4 w-4" />
                         {t("add_service")}
                       </Button>
                     </DialogTrigger>
@@ -540,32 +663,41 @@ const ResidentDetailPage = () => {
                     </DialogContent>
                   </Dialog>
                 </div>
-                {/* Service Request List */}
                 <div className="space-y-3">
                   {serviceHistory.length > 0 ? (
                     serviceHistory.map((service) => (
                       <div
                         key={service.request_id}
-                        className="flex justify-between items-center p-3 border rounded-lg hover:bg-muted transition-colors"
+                        className="flex justify-between items-center p-4 border rounded-lg hover:bg-muted/30 transition-colors"
                       >
                         <div>
                           <p className="font-medium">{service.type}</p>
                           <p className="text-sm text-muted-foreground">
-                            {t("date")}: {service.created_at}, {t("status")}:{" "}
-                            <span
-                              className={`${
+                            {t("date")}: {formatDate(service.created_at)}
+                          </p>
+                          <p className="text-sm mt-1">
+                            {t("status")}:{" "}
+                            <Badge
+                              variant={
                                 service.status === "completed"
-                                  ? "text-green-600"
-                                  : "text-yellow-600"
-                              }`}
+                                  ? "success"
+                                  : service.status === "in progress"
+                                  ? "default"
+                                  : "destructive"
+                              }
                             >
                               {service.status}
-                            </span>
+                            </Badge>
                           </p>
                         </div>
-                        <Button variant="ghost" size="sm">
-                          {t("details")}
-                        </Button>
+                        <div className="flex flex-col items-end">
+                          <Button variant="ghost" size="sm">
+                            {t("details")}
+                          </Button>
+                          <p className="text-xs text-muted-foreground mt-1 max-w-xs text-right">
+                            {service.description}
+                          </p>
+                        </div>
                       </div>
                     ))
                   ) : (
@@ -583,4 +715,4 @@ const ResidentDetailPage = () => {
   );
 };
 
-export default ResidentDetailPage;
+export default ResidentDetailPages;

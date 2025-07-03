@@ -23,7 +23,30 @@ import NotificationsPage from "@/pages/Notifications/NotificationsPage";
 import SettingsPage from "@/pages/Settings/SettingsPage";
 import NotFound from "@/pages/NotFound";
 import NewResidentForm from './NewResidentForm'
+
+
+
+import  Allresidentpages from "./AdminCRUD/ResidentsPage"
+
+import Certificates from "./pages/Documents/Certificates";
+
 import  DocumentDetailPage from "@/pages/Residents/DocumentDetailPage";
+
+//residents
+import CertificateList from "./pages/Documents/CertificateList";
+//admin
+import ActivityDetails from "./components/dashboard/ActivityDetails";
+import ResidentDetailPages from "./AdminCRUD/ResidentDetailPages";
+
+import DeleteResidentForm from "./AdminCRUD/DeleteResidentForm";
+//   staff
+import RegisterResident from "./Staff/RegisterResident";
+import Document from "./Staff/DocumentDetailPage";
+import ManageRequests from "./Staff/ManageRequests";
+
+import RequestCertificatePages from './pages/Documents/RequestCertificatePage'
+
+
 const queryClient = new QueryClient();
 
 // PrivateRoute component to protect routes that require authentication
@@ -90,7 +113,6 @@ const App = () => (
                       </PublicRoute>
                     }
                   />
-
                   {/* Protected Routes */}
                   <Route
                     path="/"
@@ -100,7 +122,6 @@ const App = () => (
                       </PrivateRoute>
                     }
                   />
-
                   {/* Residents Routes */}
                   <Route
                     path="/residents"
@@ -113,8 +134,15 @@ const App = () => (
                   <Route
                     path="/NewResidentForm"
                     element={<NewResidentForm />}
+                  />{" "}
+                  <Route
+                    path="/RegisterResident"
+                    element={<RegisterResident />}
                   />
-
+                  <Route
+                    path="/Certificates/generate"
+                    element={<Certificates />}
+                  />
                   <Route
                     path="/residents/:id"
                     element={
@@ -143,8 +171,24 @@ const App = () => (
                       </PrivateRoute>
                     }
                   />
-
                   {/* Documents Routes */}
+                  {/* {staff} */}
+                  <Route
+                    path="/documents"
+                    element={
+                      <PrivateRoute>
+                        <Document />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/ManageRequests"
+                    element={
+                      <PrivateRoute>
+                        <ManageRequests />
+                      </PrivateRoute>
+                    }
+                  />
                   <Route
                     path="/documents"
                     element={
@@ -157,12 +201,48 @@ const App = () => (
                     path="/documents/request"
                     element={
                       <PrivateRoute>
-                        <RequestCertificatePage />
+                        <RequestCertificatePages />
                       </PrivateRoute>
                     }
                   />
-
                   {/* Reports Routes */}
+                  {/* {admin} */}
+                  <Route
+                    path="/residentsALL"
+                    element={
+                      <PrivateRoute>
+                        <Allresidentpages />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/residentsall/:id"
+                    element={
+                      <PrivateRoute>
+                        <ResidentDetailPages />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="residents/delete/:residentId"
+                    element={
+                      <PrivateRoute>
+                        <DeleteResidentForm />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="CertificateList"
+                    element={
+                      <PrivateRoute>
+                        <CertificateList />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/activity/:logId"
+                    element={<ActivityDetails />}
+                  />
                   <Route
                     path="/reports"
                     element={
@@ -171,7 +251,6 @@ const App = () => (
                       </PrivateRoute>
                     }
                   />
-
                   {/* Notifications Routes */}
                   <Route
                     path="/notifications"
@@ -181,7 +260,6 @@ const App = () => (
                       </PrivateRoute>
                     }
                   />
-
                   {/* Settings Routes */}
                   <Route
                     path="/settings"
@@ -191,7 +269,6 @@ const App = () => (
                       </PrivateRoute>
                     }
                   />
-
                   {/* 404 Route */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
